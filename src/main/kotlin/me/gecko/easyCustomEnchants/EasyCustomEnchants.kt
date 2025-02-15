@@ -14,4 +14,6 @@ class EasyCustomEnchants : JavaPlugin() {
     override fun onDisable() {
         // Plugin shutdown logic
     }
+
+
 }
