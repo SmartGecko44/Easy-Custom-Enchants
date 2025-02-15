@@ -1,0 +1,4 @@
+name: Easy-Custom-Enchants
+version: '1.0-SNAPSHOT'
+main: me.gecko.easyCustomEnchants.EasyCustomEnchants
+api-version: '1.21'
