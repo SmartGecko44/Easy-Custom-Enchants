@@ -15,7 +15,7 @@ import java.nio.file.NoSuchFileException
 import java.util.logging.Level
 import java.util.logging.Logger
 
-internal class ConfigurationManager() {
+internal class ConfigurationManager {
     private val ENABLED_CONF = ": 1\n"
     private val DISABLED_CONF = ": 0\n"
     private val COULD_NOT_BE_CREATED = "Config file could not be created"
