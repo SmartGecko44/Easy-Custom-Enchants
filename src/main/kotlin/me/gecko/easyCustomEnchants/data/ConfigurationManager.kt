@@ -1,12 +1,13 @@
 package me.gecko.easyCustomEnchants.data
 
-import me.gecko.easyCustomEnchants.EasyCustomEnchants
+import me.gecko.easyCustomEnchants.enchantments.EnchantmentClass
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.Player
-import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -22,30 +23,23 @@ internal class ConfigurationManager {
     private val CREATED = "Config file created!"
     private val logger: Logger = Logger.getLogger(ConfigurationManager::class.java.name)
     private var configFile: File = File("plugins/EasyCustomEnchants/config.yml")
-    private var config: FileConfiguration? = null
+
+    val config: FileConfiguration
+        get() = YamlConfiguration.loadConfiguration(configFile)
 
     init {
-        val pluginFolder = File("plugins/EasyCustomEnchants")
-
-        if (!pluginFolder.exists() && !pluginFolder.mkdir()) {
-            logger.severe(COULD_NOT_BE_CREATED)
-        } else {
-            logger.info(CREATED)
-        }
-
-        try {
-            if (!configFile.exists() && !configFile.createNewFile()) {
-                logger.severe(COULD_NOT_BE_CREATED)
-            } else {
-                logger.info(CREATED)
+        if (!configFile.exists()) {
+            try {
+                configFile.parentFile.mkdirs()
+                configFile.createNewFile()
+                logger.info("Config file created!")
+            } catch (ex: IOException) {
+                logger.severe("Could not create config file: ${ex.message}")
             }
-            config = YamlConfiguration.loadConfiguration(configFile)
-        } catch (ex: IOException) {
-            JavaPlugin.getPlugin(EasyCustomEnchants::class.java).logger.severe("Could not load config file: ${ex.message}")
         }
     }
 
-    fun getFileWriter(): FileWriter {
+    private fun getFileWriter(): FileWriter {
         return runCatching {
             FileWriter(configFile).use { it }
         }.getOrElse {
@@ -53,14 +47,9 @@ internal class ConfigurationManager {
         }
     }
 
-    fun getConfig(): FileConfiguration {
-        config = YamlConfiguration.loadConfiguration(configFile)
-        return config as YamlConfiguration
-    }
-
-    fun saveConfig() {
+    private fun saveConfig() {
         runCatching {
-            config?.save(configFile)
+            config.save(configFile)
         }.onFailure {
             logger.severe("Unable to save config: ${it.message}")
         }
@@ -85,7 +74,6 @@ internal class ConfigurationManager {
                     player.sendMessage("${ChatColor.GREEN}Config reset!")
                 }
             }
-            config = YamlConfiguration.loadConfiguration(configFile)
         } catch (ex: IOException) {
             logger.log(Level.SEVERE, "Could not reset config file", ex)
         }
@@ -101,6 +89,51 @@ internal class ConfigurationManager {
                 is IOException -> false // Failed to delete
                 else -> false
             }
+        }
+    }
+
+    fun addEnchantment(enchantmentClass: EnchantmentClass) {
+        val path = "enchantments.${enchantmentClass.getName()}"
+        config["$path.minLevel"] = enchantmentClass.getStartLevel()
+        config["$path.maxLevel"] = enchantmentClass.getMaxLevel()
+        config["$path.itemTarget"] = enchantmentClass.getItemTarget().name
+        config["$path.isTreasure"] = enchantmentClass.isTreasure()
+        config["$path.isCursed"] = enchantmentClass.isCursed()
+        config["$path.conflictsWith"] = enchantmentClass.getConflictsWith().map { it.getName() }
+        config["$path.canEnchantItem"] = enchantmentClass.getCanEnchantItem().map { it.type.name }
+    }
+
+    fun getEnchantment(name: String) : EnchantmentClass? {
+        val path = "enchantments.$name"
+        try {
+            config[path]
+        } catch (e: Exception) {
+            logger.warning("Could not get enchantment: $name (${e.message})")
+            return null
+        }
+        return EnchantmentClass(
+            name,
+            config["$path.minLevel"] as Int,
+            config["$path.maxLevel"] as Int,
+            config["$path.itemTarget"] as EnchantmentTarget,
+            config["$path.isTreasure"] as Boolean,
+            config["$path.isCursed"] as Boolean,
+            config["$path.conflictsWith"] as List<EnchantmentClass>,
+            config["$path.canEnchantItem"] as List<ItemStack>
+        )
+    }
+
+    fun getEnchantment() : List<EnchantmentClass>? {
+        val path = "enchantments"
+        try {
+            config[path]
+        } catch (e: Exception) {
+            logger.severe("Could not get enchantments (${e.message})")
+            return null
+        }
+
+        return config.getConfigurationSection(path)?.getKeys(false)?.mapNotNull {
+            getEnchantment(it)
         }
     }
 }
