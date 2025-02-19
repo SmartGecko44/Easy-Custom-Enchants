@@ -97,11 +97,11 @@ internal class ConfigurationManager {
         val path = "enchantments.${enchantmentClass.getName()}"
         config["$path.minLevel"] = enchantmentClass.getStartLevel()
         config["$path.maxLevel"] = enchantmentClass.getMaxLevel()
-        config["$path.itemTarget"] = enchantmentClass.getItemTarget().name
+        config["$path.itemTarget"] = enchantmentClass.getItemTarget()
         config["$path.isTreasure"] = enchantmentClass.isTreasure()
         config["$path.isCursed"] = enchantmentClass.isCursed()
-        config["$path.conflictsWith"] = enchantmentClass.getConflictsWith().map { it.getName() }
-        config["$path.canEnchantItem"] = enchantmentClass.getCanEnchantItem().map { it.type.name }
+        config["$path.conflictsWith"] = enchantmentClass.getConflictsWith().map { it }
+        config["$path.canEnchantItem"] = enchantmentClass.getCanEnchantItem().map { it }
         config["$path.requiredListeners"] = enchantmentClass.getRequiredListeners().map { it }
     }
 
