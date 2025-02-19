@@ -21,7 +21,7 @@ internal class ConfigurationManager {
     private val DISABLED_CONF = ": 0\n"
     private val COULD_NOT_BE_CREATED = "Config file could not be created"
     private val CREATED = "Config file created!"
-    private val logger: Logger = Logger.getLogger(ConfigurationManager::class.java.name)
+    private val logger = Logger.getLogger(ConfigurationManager::class.java.name)
     private var configFile: File = File("plugins/EasyCustomEnchants/config.yml")
 
     val config: FileConfiguration
@@ -101,6 +101,7 @@ internal class ConfigurationManager {
         config["$path.isCursed"] = enchantmentClass.isCursed()
         config["$path.conflictsWith"] = enchantmentClass.getConflictsWith().map { it.getName() }
         config["$path.canEnchantItem"] = enchantmentClass.getCanEnchantItem().map { it.type.name }
+        config["$path.requiredListeners"] = enchantmentClass.getRequiredListeners().map { it }
     }
 
     fun getEnchantment(name: String) : EnchantmentClass? {
