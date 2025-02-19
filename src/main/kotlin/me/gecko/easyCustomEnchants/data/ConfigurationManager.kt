@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.enchantments.EnchantmentTarget
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -119,8 +120,9 @@ internal class ConfigurationManager {
             config["$path.itemTarget"] as EnchantmentTarget,
             config["$path.isTreasure"] as Boolean,
             config["$path.isCursed"] as Boolean,
-            config["$path.conflictsWith"] as List<EnchantmentClass>,
-            config["$path.canEnchantItem"] as List<ItemStack>
+            config["$path.conflictsWith"] as List<Enchantment>,
+            config["$path.canEnchantItem"] as List<ItemStack>,
+            config["$path.requiredListeners"] as List<String>
         )
     }
 

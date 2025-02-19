@@ -17,8 +17,4 @@ internal class EnchantmentHandler(setAndGet: SetAndGet) {
     fun getAllEnchantments(): List<EnchantmentClass> {
         return enchantments
     }
-
-    fun test() {
-        Registry.ENCHANTMENT.get()
-    }
 }
