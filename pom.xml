@@ -21,6 +21,7 @@
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <plugins>
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
@@ -38,16 +39,22 @@
                     <jvmTarget>${java.version}</jvmTarget>
                 </configuration>
             </plugin>
+
+            <!-- Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -60,6 +67,44 @@
         </resources>
     </build>
 
+    <!-- Profiles -->
+    <profiles>
+        <!-- Local build profile (ChatGPT generated, just for my local testing) -->
+        <profile>
+            <id>local</id>
+            <activation>
+                <property>
+                    <name>env.LOCAL_BUILD</name>
+                </property>
+            </activation>
+            <build>
+                <defaultGoal>clean package</defaultGoal>
+                <plugins>
+                    <!-- Maven Shade Plugin for local build -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                                    <outputDirectory>F:\Servers\Spigot\Spigot 1.21.4\plugins</outputDirectory>
+                                    <shadedArtifactAttached>true</shadedArtifactAttached>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <!-- Repositories -->
     <repositories>
         <repository>
             <id>spigotmc-repo</id>
@@ -71,7 +116,9 @@
         </repository>
     </repositories>
 
+    <!-- Dependencies -->
     <dependencies>
+        <!-- Spigot API -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
