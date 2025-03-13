@@ -2,8 +2,6 @@ package me.gecko.easyCustomEnchants.logic
 
 import me.gecko.easyCustomEnchants.data.ConfigurationManager
 import me.gecko.easyCustomEnchants.enchantments.EnchantmentClass
-import org.bukkit.Registry
-import org.bukkit.enchantments.Enchantment
 import java.util.logging.Logger
 
 internal class EnchantmentHandler(setAndGet: SetAndGet) {
